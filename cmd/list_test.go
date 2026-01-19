@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"migrator/migrations"
 	"testing"
 
+	"github.com/adirkuhn/mig/migrations"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -18,13 +18,13 @@ func TestListCmd(t *testing.T) {
 	originalMigrations := migrations.Migrations
 	migrations.Migrations = []*migrations.Migration{
 		{
-			ID: "20240101120000",
-			Up: func(db *gorm.DB) error { return nil },
+			ID:   "20240101120000",
+			Up:   func(db *gorm.DB) error { return nil },
 			Down: func(db *gorm.DB) error { return nil },
 		},
 		{
-			ID: "20240101120001",
-			Up: func(db *gorm.DB) error { return nil },
+			ID:   "20240101120001",
+			Up:   func(db *gorm.DB) error { return nil },
 			Down: func(db *gorm.DB) error { return nil },
 		},
 	}

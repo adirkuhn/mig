@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"migrator/migrations"
 	"testing"
 
+	"github.com/adirkuhn/mig/migrations"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -11,7 +11,7 @@ import (
 type Product struct {
 	ID    uint   `gorm:"primaryKey"`
 	Code  string `gorm:"size:255"`
-	Price uint   
+	Price uint
 }
 
 func TestDryRunCmd(t *testing.T) {
@@ -24,8 +24,8 @@ func TestDryRunCmd(t *testing.T) {
 	originalMigrations := migrations.Migrations
 	migrations.Migrations = []*migrations.Migration{
 		{
-			ID: "20240101120000",
-			Up: func(db *gorm.DB) error { return db.AutoMigrate(&Product{}) },
+			ID:   "20240101120000",
+			Up:   func(db *gorm.DB) error { return db.AutoMigrate(&Product{}) },
 			Down: func(db *gorm.DB) error { return db.Migrator().DropTable(&Product{}) },
 		},
 	}

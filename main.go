@@ -6,8 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"migrator/cmd"
-
+	"github.com/adirkuhn/mig/cmd"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"gorm.io/driver/mysql"

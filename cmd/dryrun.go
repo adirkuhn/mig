@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"migrator/migrations"
 	"sort"
 
+	"github.com/adirkuhn/mig/migrations"
 	"github.com/spf13/cobra"
 	"gorm.io/gorm"
 )

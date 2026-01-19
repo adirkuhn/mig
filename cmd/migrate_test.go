@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"migrator/migrations"
 	"testing"
 
+	"github.com/adirkuhn/mig/migrations"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )

@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"migrator/migrations"
 	"testing"
 
+	"github.com/adirkuhn/mig/migrations"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -18,18 +18,18 @@ func TestSetCmd(t *testing.T) {
 	originalMigrations := migrations.Migrations
 	migrations.Migrations = []*migrations.Migration{
 		{
-			ID: "20240101120000",
-			Up: func(db *gorm.DB) error { return db.Exec("CREATE TABLE table1 (id INT)").Error },
+			ID:   "20240101120000",
+			Up:   func(db *gorm.DB) error { return db.Exec("CREATE TABLE table1 (id INT)").Error },
 			Down: func(db *gorm.DB) error { return db.Exec("DROP TABLE table1").Error },
 		},
 		{
-			ID: "20240101120001",
-			Up: func(db *gorm.DB) error { return db.Exec("CREATE TABLE table2 (id INT)").Error },
+			ID:   "20240101120001",
+			Up:   func(db *gorm.DB) error { return db.Exec("CREATE TABLE table2 (id INT)").Error },
 			Down: func(db *gorm.DB) error { return db.Exec("DROP TABLE table2").Error },
 		},
 		{
-			ID: "20240101120002",
-			Up: func(db *gorm.DB) error { return db.Exec("CREATE TABLE table3 (id INT)").Error },
+			ID:   "20240101120002",
+			Up:   func(db *gorm.DB) error { return db.Exec("CREATE TABLE table3 (id INT)").Error },
 			Down: func(db *gorm.DB) error { return db.Exec("DROP TABLE table3").Error },
 		},
 	}
