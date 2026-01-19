@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -19,9 +20,12 @@ var createCmd = &cobra.Command{
 		name := args[0]
 		timestamp := time.Now().Format("20060102150405")
 		filename := fmt.Sprintf("%s_%s.go", timestamp, name)
-		
+
 		if migrationsDir == "" {
-			migrationsDir = "migrations" // Default to "migrations" if not set
+			migrationsDir = os.Getenv("MIGRATIONS_DIR")
+			if migrationsDir == "" {
+				log.Fatal("MIGRATIONS_DIR environment variable not set and --dir flag not provided")
+			}
 		}
 
 		// Ensure the migrations directory exists
@@ -31,7 +35,7 @@ var createCmd = &cobra.Command{
 				return
 			}
 		}
-		
+
 		filepath := filepath.Join(migrationsDir, filename)
 
 		file, err := os.Create(filepath)

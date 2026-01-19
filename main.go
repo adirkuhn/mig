@@ -6,24 +6,29 @@ import (
 	"os"
 	"strings"
 
+	"migrator/cmd"
+
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"migrator/cmd"
 )
 
 func main() {
-	err := godotenv.Load()
+	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalf("Error loading .env file: %v", err)
 	}
 
 	databaseURL := os.Getenv("DATABASE_URL")
 	if databaseURL == "" {
 		log.Fatal("DATABASE_URL environment variable not set")
+	}
+
+	if os.Getenv("MIGRATIONS_DIR") == "" {
+		log.Fatal("MIGRATIONS_DIR environment variable not set")
 	}
 
 	parts := strings.SplitN(databaseURL, "://", 2)
