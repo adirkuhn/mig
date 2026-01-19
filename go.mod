@@ -1,4 +1,4 @@
-module migrator
+module github.com/adirkuhn/mig
 
 go 1.25.1
 
