@@ -2,14 +2,6 @@
 
 A simple database migration tool for GORM.
 
-## Installation
-
-To install the migrator CLI, you can use `go install`:
-
-```bash
-go install migrator
-```
-
 ## Usage
 
 The migrator tool provides several commands to manage your database migrations.
