@@ -90,6 +90,11 @@ func main() {
 }
 ```
 
+
+Your migration folder should have the package name `migrations` and contain your migration files:
+Import migrations like this:
+import ( _ "your_project/migrations" )
+
 Then you can run the migrator from your application:
 
 ```bash
