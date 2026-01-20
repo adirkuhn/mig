@@ -5,7 +5,6 @@ import (
 	"log"
 	"sort"
 
-	"github.com/adirkuhn/mig/migrations"
 	"github.com/spf13/cobra"
 )
 
@@ -26,17 +25,19 @@ var listCmd = &cobra.Command{
 			appliedMap[m.ID] = true
 		}
 
-		sort.Slice(migrations.Migrations, func(i, j int) bool {
-			return migrations.Migrations[i].ID < migrations.Migrations[j].ID
+		allMigrations := GetMigrations() // Updated to GetMigrations()
+
+		sort.Slice(allMigrations, func(i, j int) bool {
+			return allMigrations[i].ID < allMigrations[j].ID
 		})
 
 		fmt.Println("Available migrations:")
-		for _, m := range migrations.Migrations {
+		for _, m := range allMigrations {
 			status := "pending"
 			if appliedMap[m.ID] {
 				status = "applied"
 			}
-			fmt.Printf("  %s: %s\n", m.ID, status)
+			fmt.Printf("  %s [%s]: %s\n", m.ID, m.Name, status) // Updated to include m.Name
 		}
 	},
 }

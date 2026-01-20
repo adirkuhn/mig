@@ -48,12 +48,14 @@ var createCmd = &cobra.Command{
 		template := fmt.Sprintf(`package migrations
 
 import (
+	"github.com/adirkuhn/mig/cmd"
 	"gorm.io/gorm"
 )
 
 func init() {
-	Migrations = append(Migrations, &Migration{
+	cmd.Register(&cmd.Migration{
 		ID: "%s",
+		Name: "%s",
 		Up: func(db *gorm.DB) error {
 			// your migration logic here
 			return nil
@@ -64,7 +66,7 @@ func init() {
 		},
 	})
 }
-`, timestamp)
+`, timestamp, name)
 
 		_, err = file.WriteString(template)
 		if err != nil {

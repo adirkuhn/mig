@@ -3,7 +3,6 @@ package cmd
 import (
 	"testing"
 
-	"github.com/adirkuhn/mig/migrations"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -15,27 +14,26 @@ func TestListCmd(t *testing.T) {
 	cmd := NewMigratorCmd(db)
 
 	// Create dummy migrations
-	originalMigrations := migrations.Migrations
-	migrations.Migrations = []*migrations.Migration{
-		{
-			ID:   "20240101120000",
-			Up:   func(db *gorm.DB) error { return nil },
-			Down: func(db *gorm.DB) error { return nil },
-		},
-		{
-			ID:   "20240101120001",
-			Up:   func(db *gorm.DB) error { return nil },
-			Down: func(db *gorm.DB) error { return nil },
-		},
-	}
-	defer func() { migrations.Migrations = originalMigrations }()
+	Register(&Migration{
+		ID:   "20240101120000",
+		Name: "CreateDummyTable",
+		Up:   func(db *gorm.DB) error { return nil },
+		Down: func(db *gorm.DB) error { return nil },
+	})
+	Register(&Migration{
+		ID:   "20240101120001",
+		Name: "AddAnotherDummyTable",
+		Up:   func(db *gorm.DB) error { db.Exec("CREATE TABLE dummy (id INT)"); return nil },
+		Down: func(db *gorm.DB) error { db.Exec("DROP TABLE dummy"); return nil },
+	})
+	defer ClearRegistry()
 
 	// List without applying any migrations
 	output, err := execute(t, cmd, "list")
 	assert.NoError(t, err)
 	filteredOutput := filterGormLog(output)
-	assert.Contains(t, filteredOutput, "20240101120000: pending")
-	assert.Contains(t, filteredOutput, "20240101120001: pending")
+	assert.Contains(t, filteredOutput, "20240101120000 [CreateDummyTable]: pending")
+	assert.Contains(t, filteredOutput, "20240101120001 [AddAnotherDummyTable]: pending")
 
 	// Apply one migration
 	_, err = execute(t, cmd, "migrate")
@@ -45,6 +43,6 @@ func TestListCmd(t *testing.T) {
 	output, err = execute(t, cmd, "list")
 	assert.NoError(t, err)
 	filteredOutput = filterGormLog(output)
-	assert.Contains(t, filteredOutput, "20240101120000: applied")
-	assert.Contains(t, filteredOutput, "20240101120001: applied")
+	assert.Contains(t, filteredOutput, "20240101120000 [CreateDummyTable]: applied")
+	assert.Contains(t, filteredOutput, "20240101120001 [AddAnotherDummyTable]: applied")
 }

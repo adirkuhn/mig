@@ -5,7 +5,6 @@ import (
 	"log"
 	"sort"
 
-	"github.com/adirkuhn/mig/migrations"
 	"github.com/spf13/cobra"
 )
 
@@ -34,15 +33,17 @@ var migrateCmd = &cobra.Command{
 			appliedMap[m.ID] = true
 		}
 
-		sort.Slice(migrations.Migrations, func(i, j int) bool {
-			return migrations.Migrations[i].ID < migrations.Migrations[j].ID
+		allMigrations := GetMigrations() // Updated to GetMigrations()
+
+		sort.Slice(allMigrations, func(i, j int) bool {
+			return allMigrations[i].ID < allMigrations[j].ID
 		})
 
-		for _, m := range migrations.Migrations {
+		for _, m := range allMigrations {
 			if !appliedMap[m.ID] {
 				fmt.Println("Applying migration:", m.ID)
 				if err := m.Up(db); err != nil {
-					log.Fatalf("failed to apply migration %s: %v", m.ID, err)
+					log.Fatalf("failed to apply migration %s [%s]: %v", m.ID, m.Name, err)
 				}
 				db.Create(&MigrationModel{ID: m.ID})
 			}

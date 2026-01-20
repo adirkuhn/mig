@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/adirkuhn/mig/cmd"
+	_ "github.com/adirkuhn/mig/mig"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"gorm.io/driver/mysql"

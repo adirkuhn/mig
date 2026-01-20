@@ -5,7 +5,6 @@ import (
 	"log"
 	"sort"
 
-	"github.com/adirkuhn/mig/migrations"
 	"github.com/spf13/cobra"
 )
 
@@ -29,11 +28,13 @@ var setCmd = &cobra.Command{
 			appliedMap[m.ID] = true
 		}
 
-		sort.Slice(migrations.Migrations, func(i, j int) bool {
-			return migrations.Migrations[i].ID < migrations.Migrations[j].ID
+		allMigrations := GetMigrations() // Updated to GetMigrations()
+
+		sort.Slice(allMigrations, func(i, j int) bool {
+			return allMigrations[i].ID < allMigrations[j].ID
 		})
 
-		for _, m := range migrations.Migrations {
+		for _, m := range allMigrations {
 			if m.ID > version {
 				if appliedMap[m.ID] {
 					fmt.Println("Rolling back migration:", m.ID)
@@ -45,11 +46,11 @@ var setCmd = &cobra.Command{
 			}
 		}
 
-		sort.Slice(migrations.Migrations, func(i, j int) bool {
-			return migrations.Migrations[i].ID < migrations.Migrations[j].ID
+		sort.Slice(allMigrations, func(i, j int) bool {
+			return allMigrations[i].ID < allMigrations[j].ID
 		})
 
-		for _, m := range migrations.Migrations {
+		for _, m := range allMigrations {
 			if m.ID <= version {
 				if !appliedMap[m.ID] {
 					fmt.Println("Applying migration:", m.ID)

@@ -3,7 +3,6 @@ package cmd
 import (
 	"testing"
 
-	"github.com/adirkuhn/mig/migrations"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -21,15 +20,12 @@ func TestDryRunCmd(t *testing.T) {
 	cmd := NewMigratorCmd(db)
 
 	// Create dummy migrations
-	originalMigrations := migrations.Migrations
-	migrations.Migrations = []*migrations.Migration{
-		{
-			ID:   "20240101120000",
-			Up:   func(db *gorm.DB) error { return db.AutoMigrate(&Product{}) },
-			Down: func(db *gorm.DB) error { return db.Migrator().DropTable(&Product{}) },
-		},
-	}
-	defer func() { migrations.Migrations = originalMigrations }()
+	Register(&Migration{
+		ID:   "20240101120000",
+		Up:   func(db *gorm.DB) error { return db.AutoMigrate(&Product{}) },
+		Down: func(db *gorm.DB) error { return db.Migrator().DropTable(&Product{}) },
+	})
+	defer ClearRegistry()
 
 	// Run the dry-run command
 	output, err := execute(t, cmd, "dry-run")

@@ -3,7 +3,6 @@ package cmd
 import (
 	"testing"
 
-	"github.com/adirkuhn/mig/migrations"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -16,19 +15,16 @@ func TestRollbackCmd(t *testing.T) {
 		cmd := NewMigratorCmd(db)
 
 		// Create a dummy migration
-		originalMigrations := migrations.Migrations
-		migrations.Migrations = []*migrations.Migration{
-			{
-				ID: "20240101120000",
-				Up: func(db *gorm.DB) error {
-					return db.Exec("CREATE TABLE test_table (id INT)").Error
-				},
-				Down: func(db *gorm.DB) error {
-					return db.Exec("DROP TABLE test_table").Error
-				},
+		Register(&Migration{
+			ID: "20240101120000",
+			Up: func(db *gorm.DB) error {
+				return db.Exec("CREATE TABLE test_table (id INT)").Error
 			},
-		}
-		defer func() { migrations.Migrations = originalMigrations }()
+			Down: func(db *gorm.DB) error {
+				return db.Exec("DROP TABLE test_table").Error
+			},
+		})
+		defer ClearRegistry()
 
 		// Apply the migration
 		_, err := execute(t, cmd, "migrate")

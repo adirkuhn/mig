@@ -5,7 +5,6 @@ import (
 	"log"
 	"sort"
 
-	"github.com/adirkuhn/mig/migrations"
 	"github.com/spf13/cobra"
 )
 
@@ -13,33 +12,40 @@ var rollbackCmd = &cobra.Command{
 	Use:   "rollback",
 	Short: "Rollback the last applied migration",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := db.AutoMigrate(&MigrationModel{})
-		if err != nil {
-			log.Fatal("failed to migrate migrations table")
-		}
 
 		var lastMigration MigrationModel
-		db.Order("id desc").First(&lastMigration)
-
-		if lastMigration.ID == "" {
+		if err := db.Order("id desc").First(&lastMigration).Error; err != nil {
 			fmt.Println("No migrations to rollback")
 			return
 		}
 
-		sort.Slice(migrations.Migrations, func(i, j int) bool {
-			return migrations.Migrations[i].ID > migrations.Migrations[j].ID
+		allMigrations := GetMigrations()
+
+		sort.Slice(allMigrations, func(i, j int) bool {
+			return allMigrations[i].ID > allMigrations[j].ID
 		})
 
-		for _, m := range migrations.Migrations {
-			if m.ID == lastMigration.ID {
-				fmt.Println("Rolling back migration:", m.ID)
-				if err := m.Down(db); err != nil {
-					log.Fatalf("failed to rollback migration %s: %v", m.ID, err)
-				}
-				db.Delete(&MigrationModel{ID: m.ID})
-				fmt.Println("Migration rolled back successfully")
+		for _, m := range allMigrations {
+			if m.ID != lastMigration.ID {
+				continue
+			}
+
+			fmt.Println("Rolling back migration:", m.ID)
+
+			execDB := DB()
+
+			if err := m.Down(execDB); err != nil {
+				log.Fatalf("failed to rollback migration %s: %v", m.ID, err)
+			}
+
+			if dryRun {
+				fmt.Println("-- dry-run: migration state not updated")
 				return
 			}
+
+			db.Delete(&MigrationModel{ID: m.ID})
+			fmt.Println("Migration rolled back successfully")
+			return
 		}
 	},
 }
